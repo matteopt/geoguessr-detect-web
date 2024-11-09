@@ -17,6 +17,7 @@ cities = {}
 def init_data():
     data = requests.get("https://github.com/dr5hn/countries-states-cities-database/raw/refs/heads/master/csv/cities.csv").text
     csvr = csv.reader(data.splitlines(), delimiter=",", quotechar='"')
+    next(csvr, None)
     _cities = list(csvr)
 
     global cities
@@ -65,6 +66,33 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
 
             image = Image.open(io.BytesIO(data))
             choices = list(cities.keys()) # countries
+            lprobs = guess(image, choices)
+            j = json.dumps(lprobs)
+
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(j.encode("utf-8"))
+        elif re.search("/state", self.path):
+            country = requests.utils.unquote(self.path).split("/")[-1]
+            length = int(self.headers.get("content-length"))
+            data = self.rfile.read(length)
+
+            image = Image.open(io.BytesIO(data))
+            choices = list(cities[country].keys()) # states
+            lprobs = guess(image, choices)
+            j = json.dumps(lprobs)
+
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(j.encode("utf-8"))
+        elif re.search("/city", self.path):
+            country = requests.utils.unquote(self.path).split("/")[-2]
+            state = requests.utils.unquote(self.path).split("/")[-1]
+            length = int(self.headers.get("content-length"))
+            data = self.rfile.read(length)
+
+            image = Image.open(io.BytesIO(data))
+            choices = list(cities[country][state]) # cities
             lprobs = guess(image, choices)
             j = json.dumps(lprobs)
 
