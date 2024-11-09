@@ -9,8 +9,8 @@ import json
 import requests
 import os
 
-model = CLIPModel.from_pretrained("geolocal/StreetCLIP")
-processor = CLIPProcessor.from_pretrained("geolocal/StreetCLIP")
+model = None
+processor = None
 
 cities = {}
 
@@ -50,8 +50,15 @@ def guess(image, choices):
     #print("\n".join([f"{p[1]} {p[0]}" for p in lprobs[-5:]]))
     return lprobs
 
+basic = None
+
 class HTTPRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
+        global basic
+        if "Authorization" not in self.headers or basic is None or self.headers["Authorization"] != f"Basic {basic}":
+            self.send_response(403)
+            self.end_headers()
+            return
         if re.search("/country", self.path):
             length = int(self.headers.get("content-length"))
             data = self.rfile.read(length)
@@ -71,7 +78,16 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
 def main():
     logging.basicConfig(level=logging.INFO)
 
+    if "BASIC_AUTH" not in os.environ:
+        logging.error("Please set the BASIC_AUTH environment variable")
+        exit(1)
+    basic = os.environ["BASIC_AUTH"]
     init_data()
+
+    global model
+    global processor
+    model = CLIPModel.from_pretrained("geolocal/StreetCLIP")
+    processor = CLIPProcessor.from_pretrained("geolocal/StreetCLIP")
     
     host = os.environ["LISTEN_ADDR"] if "LISTEN_ADDR" in os.environ else "0.0.0.0"
     port = int(os.environ["LISTEN_PORT"]) if "LISTEN_PORT" in os.environ else 8000
