@@ -7,6 +7,7 @@ import csv
 from transformers import CLIPProcessor, CLIPModel
 import json
 import requests
+import os
 
 model = CLIPModel.from_pretrained("geolocal/StreetCLIP")
 processor = CLIPProcessor.from_pretrained("geolocal/StreetCLIP")
@@ -72,8 +73,8 @@ def main():
 
     init_data()
     
-    host = "localhost"
-    port = 8000
+    host = os.environ["LISTEN_ADDR"] if "LISTEN_ADDR" in os.environ else "*"
+    port = int(os.environ["LISTEN_PORT"]) if "LISTEN_PORT" in os.environ else 8000
     server = HTTPServer((host, port), HTTPRequestHandler)
     logging.info(f"HTTP server listening on {host}:{port}")
     try:
