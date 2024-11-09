@@ -15,7 +15,7 @@ cities = {}
 
 def init_data():
     data = requests.get("https://github.com/dr5hn/countries-states-cities-database/raw/refs/heads/master/csv/cities.csv").text
-    csvr = csv.reader(data, delimiter=",", quotechar='"')
+    csvr = csv.reader(data.splitlines(), delimiter=",", quotechar='"')
     _cities = list(csvr)
 
     global cities
