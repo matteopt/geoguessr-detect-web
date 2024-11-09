@@ -46,7 +46,7 @@ def guess(image, choices):
         lprobs.append((choices[i], probs.tolist()[0][i]))
 
     lprobs = sorted(lprobs, key=lambda p: p[1])
-    print("\n".join([f"{p[1]} {p[0]}" for p in lprobs[-5:]]))
+    #print("\n".join([f"{p[1]} {p[0]}" for p in lprobs[-5:]]))
     return lprobs
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
