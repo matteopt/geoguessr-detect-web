@@ -14,7 +14,7 @@ processor = CLIPProcessor.from_pretrained("geolocal/StreetCLIP")
 cities = {}
 
 def init_data():
-    data = requests.get("https://github.com/dr5hn/countries-states-cities-database/raw/refs/heads/master/csv/cities.csv")
+    data = requests.get("https://github.com/dr5hn/countries-states-cities-database/raw/refs/heads/master/csv/cities.csv").text
     csvr = csv.reader(data, delimiter=",", quotechar='"')
     _cities = list(csvr)
 
