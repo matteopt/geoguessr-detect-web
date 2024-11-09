@@ -73,7 +73,7 @@ def main():
 
     init_data()
     
-    host = os.environ["LISTEN_ADDR"] if "LISTEN_ADDR" in os.environ else "*"
+    host = os.environ["LISTEN_ADDR"] if "LISTEN_ADDR" in os.environ else "0.0.0.0"
     port = int(os.environ["LISTEN_PORT"]) if "LISTEN_PORT" in os.environ else 8000
     server = HTTPServer((host, port), HTTPRequestHandler)
     logging.info(f"HTTP server listening on {host}:{port}")
