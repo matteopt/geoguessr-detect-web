@@ -81,6 +81,7 @@ def main():
     if "BASIC_AUTH" not in os.environ:
         logging.error("Please set the BASIC_AUTH environment variable")
         exit(1)
+    global basic
     basic = os.environ["BASIC_AUTH"]
     init_data()
 
